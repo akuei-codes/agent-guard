@@ -14,16 +14,132 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      policies: {
+        Row: {
+          approvers_required: number
+          conditions: Json
+          created_at: string
+          created_by: string
+          description: string | null
+          enabled: boolean
+          id: string
+          requires_approval: boolean
+          scope: string
+          severity: string
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          approvers_required?: number
+          conditions?: Json
+          created_at?: string
+          created_by: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          requires_approval?: boolean
+          scope?: string
+          severity?: string
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          approvers_required?: number
+          conditions?: Json
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          requires_approval?: boolean
+          scope?: string
+          severity?: string
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policies_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_members: {
+        Row: {
+          joined_at: string
+          role: Database["public"]["Enums"]["member_role"]
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          joined_at?: string
+          role?: Database["public"]["Enums"]["member_role"]
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          joined_at?: string
+          role?: Database["public"]["Enums"]["member_role"]
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_members_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          type: Database["public"]["Enums"]["workspace_type"]
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          type?: Database["public"]["Enums"]["workspace_type"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          type?: Database["public"]["Enums"]["workspace_type"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_workspace_member: {
+        Args: { _user: string; _workspace: string }
+        Returns: boolean
+      }
+      workspace_role: {
+        Args: { _user: string; _workspace: string }
+        Returns: Database["public"]["Enums"]["member_role"]
+      }
     }
     Enums: {
-      [_ in never]: never
+      member_role: "owner" | "admin" | "member" | "reviewer"
+      workspace_type: "startup" | "enterprise" | "personal"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +266,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      member_role: ["owner", "admin", "member", "reviewer"],
+      workspace_type: ["startup", "enterprise", "personal"],
+    },
   },
 } as const
