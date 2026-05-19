@@ -154,12 +154,12 @@ function Onboarding() {
   );
 }
 
-const NAV = [
+const NAV: { to: "/app" | "/app/interceptions" | "/app/policies" | "/app/approvals"; label: string; icon: typeof Activity; exact?: boolean }[] = [
   { to: "/app", label: "Overview", icon: Activity, exact: true },
   { to: "/app/interceptions", label: "Live Interceptions", icon: Radar },
   { to: "/app/policies", label: "Policies", icon: Shield },
   { to: "/app/approvals", label: "Approval Queue", icon: CheckSquare },
-] as const;
+];
 
 function Shell() {
   const { user, signOut } = useAuth();
