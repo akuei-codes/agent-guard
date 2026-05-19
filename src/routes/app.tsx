@@ -249,10 +249,10 @@ function Shell() {
                   const name = window.prompt("New workspace name");
                   if (!name?.trim()) return;
                   try {
-                    const { createWorkspace } = useWorkspace as never; // placeholder to satisfy ts; real call below
-                    void createWorkspace;
-                  } catch {
-                    /* noop */
+                    await createWorkspace(name.trim(), "startup");
+                    toast.success("Workspace created");
+                  } catch (e) {
+                    toast.error(e instanceof Error ? e.message : "Failed");
                   }
                 }}
               >
