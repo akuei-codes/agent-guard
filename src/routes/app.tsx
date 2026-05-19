@@ -163,7 +163,7 @@ const NAV: { to: "/app" | "/app/interceptions" | "/app/policies" | "/app/approva
 
 function Shell() {
   const { user, signOut } = useAuth();
-  const { current, workspaces, setCurrent } = useWorkspace();
+  const { current, workspaces, setCurrent, createWorkspace } = useWorkspace();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
