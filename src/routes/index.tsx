@@ -78,34 +78,57 @@ function AmbientPacketField() {
 
 function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/72 backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link to="/" className="group flex items-center gap-3">
+    <header className="sticky top-3 z-50 mx-auto max-w-6xl px-3">
+      <div className="flex h-14 items-center justify-between rounded-full border border-white/[0.07] bg-background/55 px-3 backdrop-blur-2xl shadow-[0_18px_60px_-30px_rgba(0,0,0,0.9),inset_0_1px_0_0_rgba(255,255,255,0.05)] supports-[backdrop-filter]:backdrop-saturate-150">
+        <Link to="/" className="group flex items-center gap-2.5 pl-2">
           <Logo />
-          <span className="text-lg font-semibold tracking-tight transition-colors group-hover:text-foreground/95">
+          <span className="text-[15px] font-semibold tracking-tight transition-colors group-hover:text-foreground/95">
             Veto
           </span>
-          <span className="hidden font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground/80 sm:inline">
-            Decision layer
+          <span className="hidden font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground/80 md:inline">
+            · decision layer
           </span>
         </Link>
-        <div className="flex items-center gap-2">
+
+        <nav className="hidden md:flex items-center gap-1 text-[13px]">
+          <a href="#moment" className="px-3 py-1.5 rounded-full text-muted-foreground hover:text-foreground transition-colors">
+            How it works
+          </a>
+          <Link to="/login" className="px-3 py-1.5 rounded-full text-muted-foreground hover:text-foreground transition-colors">
+            Sign in
+          </Link>
+          <Link
+            to="/login"
+            search={{ mode: "signup" } as never}
+            className="px-3 py-1.5 rounded-full text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Create account
+          </Link>
           <a
             href={foundersMailto}
-            className="inline-flex rounded-full border border-border/70 bg-surface/50 px-3 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-ice/35 hover:bg-surface hover:text-ice"
+            className="px-3 py-1.5 rounded-full text-muted-foreground hover:text-foreground transition-colors"
           >
-            founders
+            Request demo
           </a>
-          <a
-            href="#early-access"
-            className="group inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-surface/50 px-3.5 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-ice/35 hover:bg-surface hover:text-ice"
+          <a href="#early-access" className="px-3 py-1.5 rounded-full text-muted-foreground hover:text-foreground transition-colors">
+            Waitlist
+          </a>
+        </nav>
+
+        <div className="flex items-center gap-2 pr-1">
+          <Link
+            to="/login"
+            className="md:hidden inline-flex rounded-full border border-border/70 bg-surface/40 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-ice hover:border-ice/35 transition-colors"
           >
-            early access
-            <ArrowUpRight
-              className="size-3.5 opacity-75 transition-transform group-hover:-translate-y-px group-hover:translate-x-px"
-              aria-hidden
-            />
-          </a>
+            Sign in
+          </Link>
+          <Link
+            to="/app"
+            className="group relative inline-flex items-center gap-1.5 rounded-full border border-signal/45 bg-gradient-to-b from-signal/[0.18] to-signal/[0.04] px-3.5 py-1.5 font-mono text-xs uppercase tracking-[0.14em] text-signal shadow-[inset_0_1px_0_0_color-mix(in_oklab,white_18%,transparent),0_0_24px_-8px_color-mix(in_oklab,var(--signal)_70%,transparent)] transition-all hover:shadow-[0_0_28px_-6px_color-mix(in_oklab,var(--signal)_85%,transparent)] hover:-translate-y-px"
+          >
+            View product
+            <ArrowUpRight className="size-3.5 transition-transform group-hover:-translate-y-px group-hover:translate-x-px" aria-hidden />
+          </Link>
         </div>
       </div>
     </header>

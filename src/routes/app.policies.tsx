@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, Shield, ShieldOff, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/app/WorkspaceProvider";
 import { useAuth } from "@/app/useAuth";
@@ -17,6 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { POLICY_TEMPLATES, PolicyTemplateGrid, type PolicyTemplate } from "@/components/app/PolicyTemplates";
 
 export const Route = createFileRoute("/app/policies")({
   component: PoliciesPage,
@@ -34,33 +35,6 @@ type Policy = {
   enabled: boolean;
   created_at: string;
 };
-
-const TEMPLATES = [
-  {
-    title: "Require approval for production deploys",
-    description: "Any rollout/restart against a cluster labelled `production` requires human sign-off.",
-    severity: "high",
-    requires_approval: true,
-  },
-  {
-    title: "Block deletion of production databases",
-    description: "DROP/TRUNCATE/DELETE against production schemas are blocked outright.",
-    severity: "critical",
-    requires_approval: false,
-  },
-  {
-    title: "Escalate refunds above $1,000",
-    description: "Stripe / billing refunds beyond threshold require finance reviewer.",
-    severity: "high",
-    requires_approval: true,
-  },
-  {
-    title: "Prevent exporting >100 customer records",
-    description: "Bulk PII exports get held pending review.",
-    severity: "high",
-    requires_approval: true,
-  },
-];
 
 function PoliciesPage() {
   const { current } = useWorkspace();
@@ -92,9 +66,13 @@ function PoliciesPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current?.id]);
 
-  const create = async (preset?: typeof form) => {
+  const insertPolicy = async (data: {
+    title: string;
+    description: string;
+    severity: string;
+    requires_approval: boolean;
+  }) => {
     if (!current || !user) return;
-    const data = preset ?? form;
     if (!data.title.trim()) return;
     const { error } = await supabase.from("policies").insert({
       workspace_id: current.id,
@@ -114,11 +92,17 @@ function PoliciesPage() {
     load();
   };
 
+  const pickTemplate = (t: PolicyTemplate) => {
+    insertPolicy({
+      title: t.title,
+      description: t.description,
+      severity: t.severity,
+      requires_approval: t.requires_approval,
+    });
+  };
+
   const toggle = async (p: Policy) => {
-    const { error } = await supabase
-      .from("policies")
-      .update({ enabled: !p.enabled })
-      .eq("id", p.id);
+    const { error } = await supabase.from("policies").update({ enabled: !p.enabled }).eq("id", p.id);
     if (error) toast.error(error.message);
     else load();
   };
@@ -134,93 +118,88 @@ function PoliciesPage() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-8 max-w-[1200px] mx-auto">
+    <div className="relative px-6 lg:px-10 py-8 max-w-[1400px] mx-auto">
       <div className="flex items-end justify-between mb-8 gap-6">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Policies</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Rules that decide what gets through, what gets escalated, and what gets blocked.
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-ice animate-pulse-dot" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-ice">
+              Security perimeter
+            </span>
+          </div>
+          <h1 className="text-3xl font-semibold tracking-tight mt-2">Policies</h1>
+          <p className="text-sm text-muted-foreground mt-1 max-w-xl">
+            Rules that decide what gets through, what gets escalated, and what gets blocked. Veto
+            evaluates them against every matching action before execution.
           </p>
         </div>
-        <Button onClick={() => setOpen(true)}>
+        <Button onClick={() => setOpen(true)} className="gap-2">
           <Plus className="h-4 w-4" /> New policy
         </Button>
       </div>
 
-      {policies.length === 0 && !loading && (
-        <div className="rounded-2xl border bg-surface/50 p-8 mb-6">
-          <h3 className="font-semibold">Start from a template</h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            These map directly to the most common production-incident patterns.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-3 mt-5">
-            {TEMPLATES.map((t) => (
-              <button
-                key={t.title}
-                onClick={() =>
-                  create({
-                    title: t.title,
-                    description: t.description,
-                    severity: t.severity,
-                    requires_approval: t.requires_approval,
-                  })
-                }
-                className="text-left p-4 rounded-xl border border-border hover:border-signal/40 hover:bg-signal/5 transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <SeverityChip severity={t.severity} />
-                  <span className="font-medium text-sm">{t.title}</span>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1.5">{t.description}</div>
-              </button>
-            ))}
-          </div>
+      {/* Template gallery */}
+      <section className="mb-10">
+        <div className="flex items-baseline justify-between mb-4">
+          <h2 className="text-sm font-mono uppercase tracking-[0.22em] text-muted-foreground">
+            Perimeter templates
+          </h2>
+          <span className="text-[10px] font-mono text-muted-foreground/60">
+            {POLICY_TEMPLATES.length} curated
+          </span>
         </div>
-      )}
+        <PolicyTemplateGrid onPick={pickTemplate} />
+      </section>
 
-      <div className="rounded-2xl border bg-surface/50 overflow-hidden">
-        {loading ? (
-          <div className="p-8 text-center text-muted-foreground font-mono text-xs uppercase">
-            Loading…
-          </div>
-        ) : policies.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground text-sm">
-            No custom policies yet.
-          </div>
-        ) : (
-          <div className="divide-y divide-border/60">
-            {policies.map((p) => (
-              <div key={p.id} className="px-5 py-4 flex items-start gap-4">
-                <div
-                  className={`mt-1 h-2 w-2 rounded-full ${
-                    p.enabled ? "bg-signal animate-pulse-dot" : "bg-muted-foreground/40"
-                  }`}
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <SeverityChip severity={p.severity} />
-                    <h3 className="font-medium">{p.title}</h3>
-                    {p.requires_approval && (
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-warn border border-warn/30 bg-warn/10 px-1.5 py-0.5 rounded">
-                        approval required
-                      </span>
+      {/* Active policies */}
+      <section>
+        <h2 className="text-sm font-mono uppercase tracking-[0.22em] text-muted-foreground mb-4">
+          Active perimeter
+        </h2>
+        <div className="rounded-2xl border border-border/60 bg-surface/40 backdrop-blur-sm overflow-hidden">
+          {loading ? (
+            <div className="p-8 text-center text-muted-foreground font-mono text-xs uppercase">
+              Loading…
+            </div>
+          ) : policies.length === 0 ? (
+            <div className="p-12 text-center text-sm text-muted-foreground">
+              No active policies. Add one from the templates above or build a custom rule.
+            </div>
+          ) : (
+            <div className="divide-y divide-border/40">
+              {policies.map((p) => (
+                <div key={p.id} className="px-5 py-4 flex items-start gap-4 hover:bg-surface/30 transition-colors">
+                  <div
+                    className={`mt-1.5 h-2 w-2 rounded-full ${
+                      p.enabled ? "bg-signal animate-pulse-dot" : "bg-muted-foreground/40"
+                    }`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <SeverityChip severity={p.severity} />
+                      <h3 className="font-medium">{p.title}</h3>
+                      {p.requires_approval && (
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-warn border border-warn/30 bg-warn/10 px-1.5 py-0.5 rounded">
+                          approval required
+                        </span>
+                      )}
+                    </div>
+                    {p.description && (
+                      <p className="text-sm text-muted-foreground mt-1">{p.description}</p>
                     )}
                   </div>
-                  {p.description && (
-                    <p className="text-sm text-muted-foreground mt-1">{p.description}</p>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <Switch checked={p.enabled} onCheckedChange={() => toggle(p)} />
+                    <Button variant="ghost" size="icon" onClick={() => remove(p)}>
+                      <Trash2 className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Switch checked={p.enabled} onCheckedChange={() => toggle(p)} />
-                  <Button variant="ghost" size="icon" onClick={() => remove(p)}>
-                    <Trash2 className="h-4 w-4 text-muted-foreground" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg">
@@ -288,7 +267,7 @@ function PoliciesPage() {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={() => create()}>Create policy</Button>
+            <Button onClick={() => insertPolicy(form)}>Create policy</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -313,7 +292,3 @@ function SeverityChip({ severity }: { severity: string }) {
     </span>
   );
 }
-
-// satisfy linter
-void Shield;
-void ShieldOff;

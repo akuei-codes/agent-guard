@@ -9,6 +9,12 @@ import {
   LogOut,
   Plus,
   ShieldCheck,
+  Bot,
+  AlertOctagon,
+  Plug,
+  ScrollText,
+  Settings as SettingsIcon,
+  Command,
 } from "lucide-react";
 import { AuthProvider, useAuth } from "@/app/useAuth";
 import { WorkspaceProvider, useWorkspace } from "@/app/WorkspaceProvider";
@@ -50,7 +56,6 @@ function Gate() {
   if (authLoading) return <FullscreenLoader label="Authenticating" />;
 
   if (!user) {
-    // redirect to /login
     if (typeof window !== "undefined") {
       navigate({ to: "/login" });
     }
@@ -102,7 +107,7 @@ function Onboarding() {
           <span className="font-mono text-xs uppercase tracking-[0.25em]">Veto · setup</span>
         </div>
 
-        <div className="rounded-2xl border bg-surface/70 backdrop-blur-sm p-8 shadow-2xl">
+        <div className="rounded-2xl border border-border/60 bg-surface/60 backdrop-blur-xl p-8 shadow-2xl">
           <h1 className="text-2xl font-semibold tracking-tight">Create your workspace</h1>
           <p className="text-sm text-muted-foreground mt-2">
             A workspace is an isolated control plane — policies, agents, and audit logs scoped to one team.
@@ -161,67 +166,101 @@ const NAV: { to: "/app" | "/app/interceptions" | "/app/policies" | "/app/approva
   { to: "/app/approvals", label: "Approval Queue", icon: CheckSquare },
 ];
 
+const SOON = [
+  { label: "Agents", icon: Bot },
+  { label: "Incidents", icon: AlertOctagon },
+  { label: "Integrations", icon: Plug },
+  { label: "Audit Logs", icon: ScrollText },
+  { label: "Settings", icon: SettingsIcon },
+];
+
 function Shell() {
   const { user, signOut } = useAuth();
   const { current, workspaces, setCurrent, createWorkspace } = useWorkspace();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const active = NAV.find((n) => (n.exact ? pathname === n.to : pathname.startsWith(n.to)));
 
   return (
     <div className="min-h-screen flex bg-background">
+      {/* Ambient backdrop */}
+      <div className="pointer-events-none fixed inset-0 grid-bg opacity-[0.18]" />
+      <div className="pointer-events-none fixed -top-[20%] left-1/2 h-[60vh] w-[80vw] -translate-x-1/2 bg-[radial-gradient(ellipse_at_center,color-mix(in_oklab,var(--signal)_10%,transparent),transparent_64%)] blur-[100px]" />
+
       {/* Sidebar */}
-      <aside className="w-64 shrink-0 border-r border-border/60 bg-surface/40 backdrop-blur-sm flex flex-col">
-        <div className="px-5 py-5 border-b border-border/60">
+      <aside className="relative z-10 w-64 shrink-0 border-r border-border/40 bg-background/60 backdrop-blur-2xl flex flex-col">
+        <div className="px-5 py-5 border-b border-border/40">
           <Link to="/" className="flex items-center gap-2 text-foreground">
-            <ShieldCheck className="h-4 w-4 text-signal" />
+            <div className="relative h-7 w-7 rounded-lg border border-signal/45 bg-gradient-to-br from-signal/[0.22] via-signal/[0.08] to-transparent flex items-center justify-center shadow-[0_0_18px_-4px_color-mix(in_oklab,var(--signal)_60%,transparent)]">
+              <span className="font-mono text-xs font-bold text-signal">V</span>
+            </div>
             <span className="font-semibold tracking-tight">Veto</span>
+            <span className="ml-auto font-mono text-[9px] uppercase tracking-wider text-muted-foreground/70">
+              v0.1
+            </span>
           </Link>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <div className="px-3 py-3 border-b border-border/40">
+          <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-surface/40 border border-border/40">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-signal opacity-60 animate-pulse-dot" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-signal" />
+            </span>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground flex-1">System nominal</span>
+            <span className="text-[10px] font-mono text-signal tabular-nums">38ms</span>
+          </div>
+        </div>
+
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+          <div className="px-2 mb-1.5 text-[10px] uppercase tracking-wider text-muted-foreground/60 font-mono">
+            Mission control
+          </div>
           {NAV.map((item) => {
-            const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
+            const isActive = item.exact ? pathname === item.to : pathname.startsWith(item.to);
             const Icon = item.icon;
             return (
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors ${
-                  active
-                    ? "bg-signal/10 text-foreground border border-signal/30"
-                    : "text-muted-foreground hover:text-foreground hover:bg-surface-elevated/60 border border-transparent"
+                className={`group relative flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all ${
+                  isActive
+                    ? "bg-gradient-to-r from-signal/[0.14] to-signal/[0.02] text-foreground border border-signal/30 shadow-[inset_0_1px_0_0_color-mix(in_oklab,white_10%,transparent)]"
+                    : "text-muted-foreground hover:text-foreground hover:bg-surface/50 border border-transparent"
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                {isActive && (
+                  <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-r-full bg-signal shadow-[0_0_12px_color-mix(in_oklab,var(--signal)_80%,transparent)]" />
+                )}
+                <Icon className={`h-4 w-4 ${isActive ? "text-signal" : ""}`} />
                 {item.label}
               </Link>
             );
           })}
 
           <div className="pt-6">
-            <div className="px-3 text-[10px] uppercase tracking-wider text-muted-foreground/60 font-mono">
+            <div className="px-2 text-[10px] uppercase tracking-wider text-muted-foreground/60 font-mono">
               Coming soon
             </div>
             <div className="mt-1.5 space-y-0.5">
-              {["Agents", "Incidents", "Integrations", "Audit Logs", "Team", "Settings"].map(
-                (l) => (
-                  <div
-                    key={l}
-                    className="px-3 py-2 rounded-md text-sm text-muted-foreground/50 cursor-not-allowed"
-                  >
-                    {l}
-                  </div>
-                ),
-              )}
+              {SOON.map((s) => (
+                <div
+                  key={s.label}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-md text-sm text-muted-foreground/40 cursor-not-allowed"
+                >
+                  <s.icon className="h-4 w-4" />
+                  {s.label}
+                </div>
+              ))}
             </div>
           </div>
         </nav>
 
         {/* Workspace + user */}
-        <div className="p-3 border-t border-border/60 space-y-2">
+        <div className="p-3 border-t border-border/40 space-y-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md bg-surface-elevated/60 hover:bg-surface-elevated text-left transition-colors">
+              <button className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md bg-surface/50 hover:bg-surface/80 border border-border/40 text-left transition-colors">
                 <div className="min-w-0">
                   <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                     Workspace
@@ -263,7 +302,7 @@ function Shell() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-surface-elevated/60 transition-colors">
+              <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-surface/50 transition-colors">
                 <div className="h-7 w-7 rounded-full bg-signal/20 border border-signal/40 flex items-center justify-center text-[11px] font-semibold text-signal">
                   {(user?.email ?? "?").slice(0, 1).toUpperCase()}
                 </div>
@@ -287,8 +326,24 @@ function Shell() {
         </div>
       </aside>
 
-      <main className="flex-1 min-w-0 overflow-x-hidden">
-        <Outlet />
+      {/* Main area with top bar */}
+      <main className="relative z-10 flex-1 min-w-0 overflow-x-hidden flex flex-col">
+        <div className="sticky top-0 z-20 h-12 border-b border-border/40 bg-background/60 backdrop-blur-xl flex items-center justify-between px-6">
+          <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+            <span>{current?.name}</span>
+            <span className="text-muted-foreground/40">/</span>
+            <span className="text-foreground">{active?.label ?? "Overview"}</span>
+          </div>
+          <div className="flex items-center gap-3 text-[11px] font-mono text-muted-foreground">
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-border/50 bg-surface/40">
+              <Command className="h-3 w-3" /> K
+            </kbd>
+            <span className="hidden sm:inline">commands</span>
+          </div>
+        </div>
+        <div className="flex-1">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
