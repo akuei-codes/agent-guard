@@ -269,19 +269,32 @@ function Shell() {
           })}
 
           <div className="pt-6">
-            <div className="px-2 text-[10px] uppercase tracking-wider text-muted-foreground/60 font-mono">
-              Coming soon
+            <div className="px-2 text-[10px] uppercase tracking-wider text-muted-foreground/60 font-mono flex items-center justify-between">
+              <span>Preview</span>
+              <span className="text-[9px] text-ice/70">soon</span>
             </div>
             <div className="mt-1.5 space-y-0.5">
-              {SOON.map((s) => (
-                <div
-                  key={s.label}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-md text-sm text-muted-foreground/40 cursor-not-allowed"
-                >
-                  <s.icon className="h-4 w-4" />
-                  {s.label}
-                </div>
-              ))}
+              {SOON.map((s) => {
+                const isActive = pathname.startsWith(s.to);
+                const Icon = s.icon;
+                return (
+                  <Link
+                    key={s.to}
+                    to={s.to}
+                    className={`group flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors border ${
+                      isActive
+                        ? "bg-ice/[0.08] text-foreground border-ice/30"
+                        : "text-muted-foreground/70 hover:text-foreground hover:bg-surface/40 border-transparent"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {s.label}
+                    <span className="ml-auto text-[9px] font-mono uppercase tracking-wider text-ice/60 group-hover:text-ice/80">
+                      preview
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </nav>
