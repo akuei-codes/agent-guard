@@ -13,9 +13,14 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppPoliciesRouteImport } from './routes/app.policies'
 import { Route as AppInterceptionsRouteImport } from './routes/app.interceptions'
+import { Route as AppIntegrationsRouteImport } from './routes/app.integrations'
+import { Route as AppIncidentsRouteImport } from './routes/app.incidents'
+import { Route as AppAuditRouteImport } from './routes/app.audit'
 import { Route as AppApprovalsRouteImport } from './routes/app.approvals'
+import { Route as AppAgentsRouteImport } from './routes/app.agents'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -37,6 +42,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPoliciesRoute = AppPoliciesRouteImport.update({
   id: '/policies',
   path: '/policies',
@@ -47,9 +57,29 @@ const AppInterceptionsRoute = AppInterceptionsRouteImport.update({
   path: '/interceptions',
   getParentRoute: () => AppRoute,
 } as any)
+const AppIntegrationsRoute = AppIntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppIncidentsRoute = AppIncidentsRouteImport.update({
+  id: '/incidents',
+  path: '/incidents',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAuditRoute = AppAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppApprovalsRoute = AppApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAgentsRoute = AppAgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -57,17 +87,27 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/agents': typeof AppAgentsRoute
   '/app/approvals': typeof AppApprovalsRoute
+  '/app/audit': typeof AppAuditRoute
+  '/app/incidents': typeof AppIncidentsRoute
+  '/app/integrations': typeof AppIntegrationsRoute
   '/app/interceptions': typeof AppInterceptionsRoute
   '/app/policies': typeof AppPoliciesRoute
+  '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/app/agents': typeof AppAgentsRoute
   '/app/approvals': typeof AppApprovalsRoute
+  '/app/audit': typeof AppAuditRoute
+  '/app/incidents': typeof AppIncidentsRoute
+  '/app/integrations': typeof AppIntegrationsRoute
   '/app/interceptions': typeof AppInterceptionsRoute
   '/app/policies': typeof AppPoliciesRoute
+  '/app/settings': typeof AppSettingsRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -75,9 +115,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/agents': typeof AppAgentsRoute
   '/app/approvals': typeof AppApprovalsRoute
+  '/app/audit': typeof AppAuditRoute
+  '/app/incidents': typeof AppIncidentsRoute
+  '/app/integrations': typeof AppIntegrationsRoute
   '/app/interceptions': typeof AppInterceptionsRoute
   '/app/policies': typeof AppPoliciesRoute
+  '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
@@ -86,26 +131,41 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/app/agents'
     | '/app/approvals'
+    | '/app/audit'
+    | '/app/incidents'
+    | '/app/integrations'
     | '/app/interceptions'
     | '/app/policies'
+    | '/app/settings'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
+    | '/app/agents'
     | '/app/approvals'
+    | '/app/audit'
+    | '/app/incidents'
+    | '/app/integrations'
     | '/app/interceptions'
     | '/app/policies'
+    | '/app/settings'
     | '/app'
   id:
     | '__root__'
     | '/'
     | '/app'
     | '/login'
+    | '/app/agents'
     | '/app/approvals'
+    | '/app/audit'
+    | '/app/incidents'
+    | '/app/integrations'
     | '/app/interceptions'
     | '/app/policies'
+    | '/app/settings'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
@@ -145,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/policies': {
       id: '/app/policies'
       path: '/policies'
@@ -159,6 +226,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppInterceptionsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/integrations': {
+      id: '/app/integrations'
+      path: '/integrations'
+      fullPath: '/app/integrations'
+      preLoaderRoute: typeof AppIntegrationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/incidents': {
+      id: '/app/incidents'
+      path: '/incidents'
+      fullPath: '/app/incidents'
+      preLoaderRoute: typeof AppIncidentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/audit': {
+      id: '/app/audit'
+      path: '/audit'
+      fullPath: '/app/audit'
+      preLoaderRoute: typeof AppAuditRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/approvals': {
       id: '/app/approvals'
       path: '/approvals'
@@ -166,20 +254,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApprovalsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/agents': {
+      id: '/app/agents'
+      path: '/agents'
+      fullPath: '/app/agents'
+      preLoaderRoute: typeof AppAgentsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppAgentsRoute: typeof AppAgentsRoute
   AppApprovalsRoute: typeof AppApprovalsRoute
+  AppAuditRoute: typeof AppAuditRoute
+  AppIncidentsRoute: typeof AppIncidentsRoute
+  AppIntegrationsRoute: typeof AppIntegrationsRoute
   AppInterceptionsRoute: typeof AppInterceptionsRoute
   AppPoliciesRoute: typeof AppPoliciesRoute
+  AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAgentsRoute: AppAgentsRoute,
   AppApprovalsRoute: AppApprovalsRoute,
+  AppAuditRoute: AppAuditRoute,
+  AppIncidentsRoute: AppIncidentsRoute,
+  AppIntegrationsRoute: AppIntegrationsRoute,
   AppInterceptionsRoute: AppInterceptionsRoute,
   AppPoliciesRoute: AppPoliciesRoute,
+  AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
 }
 

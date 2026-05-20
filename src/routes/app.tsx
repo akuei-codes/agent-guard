@@ -34,6 +34,25 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/app")({
   head: () => ({ meta: [{ title: "Veto — Mission control" }] }),
   component: AppRoot,
+  notFoundComponent: () => (
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="max-w-md text-center">
+        <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+          Veto · 404
+        </div>
+        <h1 className="mt-3 text-2xl font-semibold tracking-tight">Surface not found</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          That path doesn&rsquo;t exist inside the control plane. Head back to mission control.
+        </p>
+        <Link
+          to="/app"
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-signal/45 bg-signal/10 px-4 py-2 text-xs font-mono uppercase tracking-[0.16em] text-signal hover:bg-signal/15 transition-colors"
+        >
+          Back to overview
+        </Link>
+      </div>
+    </div>
+  ),
 });
 
 function AppRoot() {
@@ -159,19 +178,30 @@ function Onboarding() {
   );
 }
 
-const NAV: { to: "/app" | "/app/interceptions" | "/app/policies" | "/app/approvals"; label: string; icon: typeof Activity; exact?: boolean }[] = [
+type NavTo =
+  | "/app"
+  | "/app/interceptions"
+  | "/app/policies"
+  | "/app/approvals"
+  | "/app/agents"
+  | "/app/incidents"
+  | "/app/integrations"
+  | "/app/audit"
+  | "/app/settings";
+
+const NAV: { to: NavTo; label: string; icon: typeof Activity; exact?: boolean }[] = [
   { to: "/app", label: "Overview", icon: Activity, exact: true },
   { to: "/app/interceptions", label: "Live Interceptions", icon: Radar },
   { to: "/app/policies", label: "Policies", icon: Shield },
   { to: "/app/approvals", label: "Approval Queue", icon: CheckSquare },
 ];
 
-const SOON = [
-  { label: "Agents", icon: Bot },
-  { label: "Incidents", icon: AlertOctagon },
-  { label: "Integrations", icon: Plug },
-  { label: "Audit Logs", icon: ScrollText },
-  { label: "Settings", icon: SettingsIcon },
+const SOON: { to: NavTo; label: string; icon: typeof Activity }[] = [
+  { to: "/app/agents", label: "Agents", icon: Bot },
+  { to: "/app/incidents", label: "Incidents", icon: AlertOctagon },
+  { to: "/app/integrations", label: "Integrations", icon: Plug },
+  { to: "/app/audit", label: "Audit Logs", icon: ScrollText },
+  { to: "/app/settings", label: "Settings", icon: SettingsIcon },
 ];
 
 function Shell() {
@@ -179,7 +209,8 @@ function Shell() {
   const { current, workspaces, setCurrent, createWorkspace } = useWorkspace();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const active = NAV.find((n) => (n.exact ? pathname === n.to : pathname.startsWith(n.to)));
+  const allNav = [...NAV, ...SOON];
+  const active = allNav.find((n) => ("exact" in n && n.exact ? pathname === n.to : pathname.startsWith(n.to)));
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -239,19 +270,32 @@ function Shell() {
           })}
 
           <div className="pt-6">
-            <div className="px-2 text-[10px] uppercase tracking-wider text-muted-foreground/60 font-mono">
-              Coming soon
+            <div className="px-2 text-[10px] uppercase tracking-wider text-muted-foreground/60 font-mono flex items-center justify-between">
+              <span>Preview</span>
+              <span className="text-[9px] text-ice/70">soon</span>
             </div>
             <div className="mt-1.5 space-y-0.5">
-              {SOON.map((s) => (
-                <div
-                  key={s.label}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-md text-sm text-muted-foreground/40 cursor-not-allowed"
-                >
-                  <s.icon className="h-4 w-4" />
-                  {s.label}
-                </div>
-              ))}
+              {SOON.map((s) => {
+                const isActive = pathname.startsWith(s.to);
+                const Icon = s.icon;
+                return (
+                  <Link
+                    key={s.to}
+                    to={s.to}
+                    className={`group flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors border ${
+                      isActive
+                        ? "bg-ice/[0.08] text-foreground border-ice/30"
+                        : "text-muted-foreground/70 hover:text-foreground hover:bg-surface/40 border-transparent"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {s.label}
+                    <span className="ml-auto text-[9px] font-mono uppercase tracking-wider text-ice/60 group-hover:text-ice/80">
+                      preview
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </nav>
