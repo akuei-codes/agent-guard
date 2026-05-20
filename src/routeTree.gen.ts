@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppPoliciesRouteImport } from './routes/app.policies'
 import { Route as AppInterceptionsRouteImport } from './routes/app.interceptions'
+import { Route as AppIncidentsRouteImport } from './routes/app.incidents'
 import { Route as AppApprovalsRouteImport } from './routes/app.approvals'
 import { Route as AppAgentsRouteImport } from './routes/app.agents'
 
@@ -48,6 +49,11 @@ const AppInterceptionsRoute = AppInterceptionsRouteImport.update({
   path: '/interceptions',
   getParentRoute: () => AppRoute,
 } as any)
+const AppIncidentsRoute = AppIncidentsRouteImport.update({
+  id: '/incidents',
+  path: '/incidents',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppApprovalsRoute = AppApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/app/agents': typeof AppAgentsRoute
   '/app/approvals': typeof AppApprovalsRoute
+  '/app/incidents': typeof AppIncidentsRoute
   '/app/interceptions': typeof AppInterceptionsRoute
   '/app/policies': typeof AppPoliciesRoute
   '/app/': typeof AppIndexRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/app/agents': typeof AppAgentsRoute
   '/app/approvals': typeof AppApprovalsRoute
+  '/app/incidents': typeof AppIncidentsRoute
   '/app/interceptions': typeof AppInterceptionsRoute
   '/app/policies': typeof AppPoliciesRoute
   '/app': typeof AppIndexRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/app/agents': typeof AppAgentsRoute
   '/app/approvals': typeof AppApprovalsRoute
+  '/app/incidents': typeof AppIncidentsRoute
   '/app/interceptions': typeof AppInterceptionsRoute
   '/app/policies': typeof AppPoliciesRoute
   '/app/': typeof AppIndexRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/app/agents'
     | '/app/approvals'
+    | '/app/incidents'
     | '/app/interceptions'
     | '/app/policies'
     | '/app/'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/app/agents'
     | '/app/approvals'
+    | '/app/incidents'
     | '/app/interceptions'
     | '/app/policies'
     | '/app'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/app/agents'
     | '/app/approvals'
+    | '/app/incidents'
     | '/app/interceptions'
     | '/app/policies'
     | '/app/'
@@ -171,6 +183,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppInterceptionsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/incidents': {
+      id: '/app/incidents'
+      path: '/incidents'
+      fullPath: '/app/incidents'
+      preLoaderRoute: typeof AppIncidentsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/approvals': {
       id: '/app/approvals'
       path: '/approvals'
@@ -191,6 +210,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAgentsRoute: typeof AppAgentsRoute
   AppApprovalsRoute: typeof AppApprovalsRoute
+  AppIncidentsRoute: typeof AppIncidentsRoute
   AppInterceptionsRoute: typeof AppInterceptionsRoute
   AppPoliciesRoute: typeof AppPoliciesRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -199,6 +219,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAgentsRoute: AppAgentsRoute,
   AppApprovalsRoute: AppApprovalsRoute,
+  AppIncidentsRoute: AppIncidentsRoute,
   AppInterceptionsRoute: AppInterceptionsRoute,
   AppPoliciesRoute: AppPoliciesRoute,
   AppIndexRoute: AppIndexRoute,
