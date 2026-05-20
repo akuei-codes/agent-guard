@@ -178,19 +178,30 @@ function Onboarding() {
   );
 }
 
-const NAV: { to: "/app" | "/app/interceptions" | "/app/policies" | "/app/approvals"; label: string; icon: typeof Activity; exact?: boolean }[] = [
+type NavTo =
+  | "/app"
+  | "/app/interceptions"
+  | "/app/policies"
+  | "/app/approvals"
+  | "/app/agents"
+  | "/app/incidents"
+  | "/app/integrations"
+  | "/app/audit"
+  | "/app/settings";
+
+const NAV: { to: NavTo; label: string; icon: typeof Activity; exact?: boolean }[] = [
   { to: "/app", label: "Overview", icon: Activity, exact: true },
   { to: "/app/interceptions", label: "Live Interceptions", icon: Radar },
   { to: "/app/policies", label: "Policies", icon: Shield },
   { to: "/app/approvals", label: "Approval Queue", icon: CheckSquare },
 ];
 
-const SOON = [
-  { label: "Agents", icon: Bot },
-  { label: "Incidents", icon: AlertOctagon },
-  { label: "Integrations", icon: Plug },
-  { label: "Audit Logs", icon: ScrollText },
-  { label: "Settings", icon: SettingsIcon },
+const SOON: { to: NavTo; label: string; icon: typeof Activity }[] = [
+  { to: "/app/agents", label: "Agents", icon: Bot },
+  { to: "/app/incidents", label: "Incidents", icon: AlertOctagon },
+  { to: "/app/integrations", label: "Integrations", icon: Plug },
+  { to: "/app/audit", label: "Audit Logs", icon: ScrollText },
+  { to: "/app/settings", label: "Settings", icon: SettingsIcon },
 ];
 
 function Shell() {
