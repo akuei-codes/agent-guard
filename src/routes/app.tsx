@@ -209,7 +209,8 @@ function Shell() {
   const { current, workspaces, setCurrent, createWorkspace } = useWorkspace();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const active = NAV.find((n) => (n.exact ? pathname === n.to : pathname.startsWith(n.to)));
+  const allNav = [...NAV, ...SOON];
+  const active = allNav.find((n) => ("exact" in n && n.exact ? pathname === n.to : pathname.startsWith(n.to)));
 
   return (
     <div className="min-h-screen flex bg-background">
