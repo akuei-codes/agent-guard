@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppPoliciesRouteImport } from './routes/app.policies'
 import { Route as AppInterceptionsRouteImport } from './routes/app.interceptions'
 import { Route as AppIntegrationsRouteImport } from './routes/app.integrations'
@@ -39,6 +40,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPoliciesRoute = AppPoliciesRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/app/integrations': typeof AppIntegrationsRoute
   '/app/interceptions': typeof AppInterceptionsRoute
   '/app/policies': typeof AppPoliciesRoute
+  '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/app/integrations': typeof AppIntegrationsRoute
   '/app/interceptions': typeof AppInterceptionsRoute
   '/app/policies': typeof AppPoliciesRoute
+  '/app/settings': typeof AppSettingsRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/app/integrations': typeof AppIntegrationsRoute
   '/app/interceptions': typeof AppInterceptionsRoute
   '/app/policies': typeof AppPoliciesRoute
+  '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/app/integrations'
     | '/app/interceptions'
     | '/app/policies'
+    | '/app/settings'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/app/integrations'
     | '/app/interceptions'
     | '/app/policies'
+    | '/app/settings'
     | '/app'
   id:
     | '__root__'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/app/integrations'
     | '/app/interceptions'
     | '/app/policies'
+    | '/app/settings'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
@@ -191,6 +203,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/policies': {
@@ -253,6 +272,7 @@ interface AppRouteChildren {
   AppIntegrationsRoute: typeof AppIntegrationsRoute
   AppInterceptionsRoute: typeof AppInterceptionsRoute
   AppPoliciesRoute: typeof AppPoliciesRoute
+  AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
@@ -264,6 +284,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppIntegrationsRoute: AppIntegrationsRoute,
   AppInterceptionsRoute: AppInterceptionsRoute,
   AppPoliciesRoute: AppPoliciesRoute,
+  AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
