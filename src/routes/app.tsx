@@ -34,6 +34,25 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/app")({
   head: () => ({ meta: [{ title: "Veto — Mission control" }] }),
   component: AppRoot,
+  notFoundComponent: () => (
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="max-w-md text-center">
+        <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+          Veto · 404
+        </div>
+        <h1 className="mt-3 text-2xl font-semibold tracking-tight">Surface not found</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          That path doesn&rsquo;t exist inside the control plane. Head back to mission control.
+        </p>
+        <Link
+          to="/app"
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-signal/45 bg-signal/10 px-4 py-2 text-xs font-mono uppercase tracking-[0.16em] text-signal hover:bg-signal/15 transition-colors"
+        >
+          Back to overview
+        </Link>
+      </div>
+    </div>
+  ),
 });
 
 function AppRoot() {
